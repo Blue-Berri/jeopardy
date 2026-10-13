@@ -1,3 +1,6 @@
 .DS_Store
 *.log
 .Thumbs.db
+
+# Unused local audio (not part of the game)
+MAGIC! - Rude (Official Instrumental).mp3

@@ -1,0 +1,49 @@
+JEOPARDY — CLUES & CORRECT RESPONSES
+=====================================
+Profile: demo
+(Generated from config/game-config.js → slot "demo" — edit that file, then run: node scripts/sync-answers.js demo)
+
+--- FINAL JEOPARDY ---
+Category: Template
+Clue: This placeholder Final Jeopardy clue is meant to be replaced when you copy this demo board.
+Answer: What is a custom clue?
+
+--- ANIMALS ---
+$200
+Clue: This tall African mammal is known for its long neck.
+Answer: What is a giraffe?
+
+$400
+Clue: A group of these birds is called a murder.
+Answer: What are crows?
+
+$600
+Clue: This marine mammal is the largest animal that has ever lived.
+Answer: What is the blue whale?
+
+--- FOOD ---
+$200
+Clue: This Italian dish is basically flatbread with tomato sauce and cheese.
+Answer: What is pizza?
+
+$400
+Clue: Guacamole's star ingredient is this green fruit.
+Answer: What is an avocado?
+
+$600
+Clue: This breakfast spread is made by churning cream.
+Answer: What is butter?
+
+--- SILLY SCIENCE ---
+$200
+Clue: Water freezes at this temperature in Celsius.
+Answer: What is 0°C?
+
+$400
+Clue: Humans typically have this many teeth as adults (if none are missing).
+Answer: What is 32?
+
+$600
+Clue: This force keeps your feet on the ground and apples near trees.
+Answer: What is gravity?
+

@@ -1,5 +1,8 @@
 {
   "title": "Jeopardy — clues and correct responses",
+  "_generatedFrom": "config/game-config.js → slot \"hack-retreat\"",
+  "_profileId": "hack-retreat",
+  "_note": "Do not edit by hand — run: node scripts/sync-answers.js hack-retreat",
   "finalJeopardy": {
     "category": "VenusHacks",
     "clue": "How many hours is VenusHacks 2026?",
@@ -128,54 +131,49 @@
     },
     {
       "name": "Music",
-      "note": "Name that tune — audio in snippets/music-{value}.mp3",
       "clues": [
         {
           "value": 200,
-          "track": "NIKI — Every Summertime",
           "clue": "Name the song and the artist from the clip.",
-          "audio": "snippets/music-200.mp3",
+          "answer": "What is Every Summertime by NIKI?",
+          "audio": "assets/snippets/music-200.mp3",
           "song": "Every Summertime",
-          "artist": "NIKI",
-          "answer": "What is Every Summertime by NIKI?"
+          "artist": "NIKI"
         },
         {
           "value": 400,
-          "track": "beabadoobee — Beaches",
           "clue": "Name the song and the artist from the clip.",
-          "audio": "snippets/music-400.mp3",
+          "answer": "What is Beaches by beabadoobee?",
+          "audio": "assets/snippets/music-400.mp3",
           "song": "Beaches",
-          "artist": "beabadoobee",
-          "answer": "What is Beaches by beabadoobee?"
+          "artist": "beabadoobee"
         },
         {
           "value": 600,
-          "track": "NewJeans — Get Up",
           "clue": "Name the song and the artist from the clip.",
-          "audio": "snippets/music-600.mp3",
+          "answer": "What is Get Up by NewJeans?",
+          "audio": "assets/snippets/music-600.mp3",
           "song": "Get Up",
-          "artist": "NewJeans",
-          "answer": "What is Get Up by NewJeans?"
+          "artist": "NewJeans"
         },
         {
           "value": 800,
-          "track": "Michael Jackson — Smooth Criminal",
           "clue": "Name the song and the artist from the clip.",
-          "audio": "snippets/music-800.mp3",
+          "answer": "What is Smooth Criminal by Michael Jackson?",
+          "audio": "assets/snippets/music-800.mp3",
           "song": "Smooth Criminal",
-          "artist": "Michael Jackson",
-          "answer": "What is Smooth Criminal by Michael Jackson?"
+          "artist": "Michael Jackson"
         },
         {
           "value": 1000,
-          "track": "SZA — Good Days",
           "clue": "Name the song and the artist from the clip.",
-          "audio": "snippets/music-1000.mp3",
+          "answer": "What is Good Days by SZA?",
+          "audio": "assets/snippets/music-1000.mp3",
           "song": "Good Days",
-          "artist": "SZA",
-          "answer": "What is Good Days by SZA?"
+          "artist": "SZA"
         }
-      ]
+      ],
+      "note": "Name that tune — put clips in assets/snippets/ and set each clue's audio path."
     }
   ]
 }

@@ -1,0 +1,73 @@
+{
+  "title": "Jeopardy — clues and correct responses",
+  "_generatedFrom": "config/game-config.js → slot \"demo\"",
+  "_profileId": "demo",
+  "_note": "Do not edit by hand — run: node scripts/sync-answers.js demo",
+  "finalJeopardy": {
+    "category": "Template",
+    "clue": "This placeholder Final Jeopardy clue is meant to be replaced when you copy this demo board.",
+    "answer": "What is a custom clue?"
+  },
+  "categories": [
+    {
+      "name": "Animals",
+      "clues": [
+        {
+          "value": 200,
+          "clue": "This tall African mammal is known for its long neck.",
+          "answer": "What is a giraffe?"
+        },
+        {
+          "value": 400,
+          "clue": "A group of these birds is called a murder.",
+          "answer": "What are crows?"
+        },
+        {
+          "value": 600,
+          "clue": "This marine mammal is the largest animal that has ever lived.",
+          "answer": "What is the blue whale?"
+        }
+      ]
+    },
+    {
+      "name": "Food",
+      "clues": [
+        {
+          "value": 200,
+          "clue": "This Italian dish is basically flatbread with tomato sauce and cheese.",
+          "answer": "What is pizza?"
+        },
+        {
+          "value": 400,
+          "clue": "Guacamole's star ingredient is this green fruit.",
+          "answer": "What is an avocado?"
+        },
+        {
+          "value": 600,
+          "clue": "This breakfast spread is made by churning cream.",
+          "answer": "What is butter?"
+        }
+      ]
+    },
+    {
+      "name": "Silly Science",
+      "clues": [
+        {
+          "value": 200,
+          "clue": "Water freezes at this temperature in Celsius.",
+          "answer": "What is 0°C?"
+        },
+        {
+          "value": 400,
+          "clue": "Humans typically have this many teeth as adults (if none are missing).",
+          "answer": "What is 32?"
+        },
+        {
+          "value": 600,
+          "clue": "This force keeps your feet on the ground and apples near trees.",
+          "answer": "What is gravity?"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+category,value,clue,answer,audio,song,artist,category_note
+Pop Culture,200,This streaming service released Stranger Things.,What is Netflix?,,,,
+Pop Culture,400,She sang Bad Guy and Happier Than Ever.,Who is Billie Eilish?,,,,
+Name That Tune,200,Name the song and artist from the clip.,What is …? (your answer),assets/snippets/music-200.mp3,Example Song,Example Artist,Name that tune — add MP3s under assets/snippets/
+Name That Tune,400,Name the song and artist from the clip.,What is …? (your answer),assets/snippets/music-400.mp3,Another Song,Another Artist,

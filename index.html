@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jeopardy! - 5 Teams</title>
+  <title>Jeopardy!</title>
   <style>
     :root {
       --jeopardy-blue: #060CE9;
@@ -17,6 +17,8 @@
       --used: #1A1A3A;
       --danger: #C0392B;
       --success: #27AE60;
+      --team-count: 5;
+      --category-count: 5;
     }
 
     * { box-sizing: border-box; }
@@ -37,7 +39,7 @@
       top: 0;
       z-index: 100;
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(var(--team-count), 1fr);
       gap: 8px;
       padding: 12px 16px;
       background: linear-gradient(180deg, var(--bg-soft) 0%, var(--bg) 100%);
@@ -186,7 +188,7 @@
     /* ============ Board ============ */
     .board {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(var(--category-count), 1fr);
       gap: 6px;
       padding: 16px;
       max-width: 1400px;
@@ -821,9 +823,183 @@
       flex-wrap: wrap;
     }
 
+    /* ============ Pre-game setup ============ */
+    .setup-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: radial-gradient(ellipse at 50% 0%, var(--bg-soft) 0%, var(--bg) 55%);
+    }
+
+    .setup-screen[hidden] { display: none !important; }
+    #game-main[hidden] { display: none !important; }
+
+    .setup-card {
+      background: var(--jeopardy-blue);
+      border: 4px solid var(--jeopardy-gold);
+      border-radius: 8px;
+      padding: 36px 40px;
+      max-width: 640px;
+      width: 100%;
+      max-height: min(92vh, 900px);
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+      text-align: center;
+    }
+
+    .setup-profile-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .setup-profile-card {
+      text-align: left;
+      background: var(--bg);
+      border: 2px solid var(--jeopardy-gold-soft);
+      border-radius: 4px;
+      padding: 12px 14px;
+      cursor: pointer;
+      color: inherit;
+      font: inherit;
+      width: 100%;
+      transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    }
+
+    .setup-profile-card:hover {
+      border-color: var(--jeopardy-gold);
+      transform: translateY(-1px);
+    }
+
+    .setup-profile-card[aria-pressed="true"] {
+      border-color: var(--jeopardy-gold);
+      background: rgba(255, 204, 0, 0.12);
+      box-shadow: inset 0 0 0 1px var(--jeopardy-gold);
+    }
+
+    .setup-profile-card .profile-title {
+      color: var(--jeopardy-gold);
+      font-family: "Impact", "Arial Black", sans-serif;
+      font-size: 1.05rem;
+      letter-spacing: 1px;
+      margin: 0 0 4px;
+    }
+
+    .setup-profile-card .profile-blurb {
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 0.88rem;
+      line-height: 1.35;
+      margin: 0;
+    }
+
+    .setup-eyebrow {
+      color: var(--jeopardy-gold);
+      font-size: 0.85rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .setup-title {
+      font-family: "Impact", "Arial Black", sans-serif;
+      font-size: clamp(1.8rem, 5vw, 2.4rem);
+      letter-spacing: 3px;
+      color: var(--jeopardy-gold);
+      margin: 0 0 8px;
+      text-shadow: 2px 2px 0 var(--jeopardy-blue-deep);
+    }
+
+    .setup-sub {
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 0.95rem;
+      margin: 0 0 24px;
+      line-height: 1.4;
+    }
+
+    .setup-field {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .setup-field label {
+      display: block;
+      color: var(--jeopardy-gold);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .setup-field select,
+    .setup-field input[type="text"] {
+      width: 100%;
+      background: var(--bg);
+      color: var(--text);
+      border: 2px solid var(--jeopardy-gold-soft);
+      border-radius: 4px;
+      padding: 10px 12px;
+      font-family: inherit;
+      font-size: 1rem;
+    }
+
+    .setup-field select:focus,
+    .setup-field input[type="text"]:focus {
+      outline: none;
+      border-color: var(--jeopardy-gold);
+      box-shadow: 0 0 0 2px rgba(255, 204, 0, 0.25);
+    }
+
+    .setup-team-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: min(40vh, 320px);
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .setup-team-row label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.75rem;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .setup-error {
+      color: #FF8A8A;
+      font-size: 0.9rem;
+      min-height: 1.2em;
+      margin: 8px 0 12px;
+    }
+
+    .setup-start-btn {
+      background: var(--jeopardy-gold);
+      color: var(--bg);
+      border: none;
+      border-radius: 4px;
+      padding: 12px 28px;
+      font-family: "Impact", "Arial Black", sans-serif;
+      font-size: 1.15rem;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: transform 0.1s, background 0.15s;
+      width: 100%;
+    }
+
+    .setup-start-btn:hover {
+      background: #FFE066;
+      transform: translateY(-1px);
+    }
+
     /* ============ Responsive ============ */
     @media (max-width: 900px) {
-      .scoreboard { grid-template-columns: repeat(5, 1fr); gap: 4px; padding: 8px; }
+      .scoreboard { gap: 4px; padding: 8px; }
       .team { padding: 6px 4px; }
       .team-name { font-size: 0.8rem; }
       .team-score { font-size: 1.1rem; }
@@ -841,19 +1017,43 @@
       .fj-adjudicate-row .fj-row-name { text-align: center; }
       .fj-adjudicate-row .fj-mini-adjust { justify-content: center; }
       .fj-results-row { grid-template-columns: 30px 1fr auto; gap: 8px; padding: 8px 10px; }
+      .setup-card { padding: 24px 20px; }
     }
   </style>
 </head>
 <body>
 
+  <div class="setup-screen" id="setup-screen">
+    <div class="setup-card">
+      <div class="setup-eyebrow">Before We Begin</div>
+      <h1 class="setup-title" id="setup-game-title">JEOPARDY!</h1>
+      <p class="setup-sub">Pick a game from <code>config/game-config.js</code>, then set how many teams are playing and enter their names.</p>
+      <div class="setup-field">
+        <label id="setup-profile-label">Choose a game</label>
+        <div class="setup-profile-list" id="setup-profile-list" role="listbox" aria-labelledby="setup-profile-label"></div>
+      </div>
+      <div class="setup-field">
+        <label for="setup-team-count">Number of teams</label>
+        <select id="setup-team-count" aria-describedby="setup-error"></select>
+      </div>
+      <div class="setup-field">
+        <span class="setup-eyebrow" style="margin-bottom:10px;display:block;">Team names</span>
+        <div class="setup-team-list" id="setup-team-list"></div>
+      </div>
+      <p class="setup-error" id="setup-error" role="alert"></p>
+      <button type="button" class="setup-start-btn" id="setup-start-btn">Start Game</button>
+    </div>
+  </div>
+
+  <div id="game-main" hidden>
   <div class="scoreboard" id="scoreboard"></div>
 
   <audio id="bg-music" loop preload="none" playsinline>
-    <source src="jeopardy-theme.mp3" type="audio/mpeg" />
+    <source id="bg-music-source" src="assets/audio/jeopardy-theme.mp3" type="audio/mpeg" />
   </audio>
 
   <div class="topbar">
-    <h1 class="title">JEOPARDY!</h1>
+    <h1 class="title" id="game-title">JEOPARDY!</h1>
     <div class="controls">
       <div class="music-controls">
         <button type="button" id="music-btn" class="music-btn" aria-pressed="false" title="Play or pause theme music (loops)">Music: Off</button>
@@ -869,6 +1069,7 @@
   </div>
 
   <div class="board" id="board"></div>
+  </div>
 
   <div class="overlay" id="overlay">
     <div class="overlay-card">
@@ -970,87 +1171,321 @@
     </div>
   </div>
 
+  <!-- All boards live in config/game-config.js (window.GAME_PROFILES slots) — see comments at top of that file -->
+  <script src="config/game-config.js"></script>
   <script>
-    // =================== State ===================
-    const STATE = {
-      teams: [
-        { name: "Team 1", score: 0 },
-        { name: "Team 2", score: 0 },
-        { name: "Team 3", score: 0 },
-        { name: "Team 4", score: 0 },
-        { name: "Team 5", score: 0 },
-      ],
-      categories: [
-        {
-          name: "Hack",
-          clues: [
-            { value: 200,  clue: "Hack at UCI's Platinum sponsorship tier costs this many U.S. dollars.", answer: "What is $6,000?", used: false },
-            { value: 400,  clue: "The year Hack at UCI hosted its first hackathon.", answer: "What is 2014?", used: false },
-            { value: 600,  clue: "This conference started after organizers from VH modeled their event on Hack at UCI's structure.", answer: "What is Designathon?", used: false },
-            { value: 800,  clue: "She has been a Hack CEO, WiCS copresident, and judged at Irvine Hacks this year.", answer: "Who is Angela Liu?", used: false },
-            { value: 1000, clue: "The venue where the very first HackUCI was held. (Host: bonus if they explain why it was there.)", answer: "What is the OC Esports Arena? (accept: Orange County Esports Arena)", used: false },
-          ]
-        },
-        {
-          name: "CS / Informatics",
-          clues: [
-            { value: 200,  clue: "This traversal uses a queue and explores a graph level by level from a start node.", answer: "What is BFS (Breadth-First Search)?", used: false },
-            { value: 400,  clue: "This low-cost method has participants think aloud while trying tasks on an interface.", answer: "What is usability testing? (accept: think-aloud usability test)", used: false },
-            { value: 600,  clue: "This umbrella process organizes work into short cycles with standups, backlog grooming, and sprint reviews.", answer: "What is Agile (Scrum)?", used: false },
-            { value: 800,  clue: "This optimization approach updates model parameters from one example (or a tiny mini-batch) at a time instead of waiting for the full dataset pass.", answer: "What is stochastic gradient descent (SGD)?", used: false },
-            { value: 1000, clue: "In HCI, this Don Norman concept describes the actions an object suggests to a user before any instructions are read.", answer: "What is an affordance?", used: false },
-          ]
-        },
-        {
-          name: "Ian",
-          clues: [
-            { value: 200,  clue: "Ian was born on this date.", answer: "What is April 30?", used: false },
-            { value: 400,  clue: "This is Ian's username on Discord.", answer: "What is \"ianwearshat\"?", used: false },
-            { value: 600,  clue: "Ian is minoring in this minor.", answer: "What is Statistics?", used: false },
-            { value: 800,  clue: "This is one of Ian\u2019s favorite franchises.", answer: "What is Star Wars?", used: false },
-            { value: 1000, clue: "Before college, Ian competed in this robotics league.", answer: "What is FIRST Tech Challenge (robotics)?", used: false },
-          ]
-        },
-        {
-          name: "Trivia",
-          clues: [
-            { value: 200,  clue: "The only U.S. state that begins with two vowels.", answer: "What is Iowa?", used: false },
-            { value: 400,  clue: "This planet rotates on its side, with an axial tilt of about 98\u00B0.", answer: "What is Uranus?", used: false },
-            { value: 600,  clue: "Many tourists picture Sydney or Melbourne \u2014 but this planned city inland is Australia\u2019s actual national capital.", answer: "What is Canberra?", used: false },
-            { value: 800,  clue: "This Italian Renaissance artist painted the Mona Lisa.", answer: "Who is Leonardo da Vinci?", used: false },
-            { value: 1000, clue: "Earth\u2019s deepest measured ocean floor lies along this trench east of the Philippines.", answer: "What is the Mariana Trench?", used: false },
-          ]
-        },
-        {
-          name: "Music",
-          clues: [
-            { value: 200, clue: "Name the song and the artist from the clip.", answer: "What is Every Summertime by NIKI?", audio: "snippets/music-200.mp3", used: false },
-            { value: 400, clue: "Name the song and the artist from the clip.", answer: "What is Beaches by beabadoobee?", audio: "snippets/music-400.mp3", used: false },
-            { value: 600, clue: "Name the song and the artist from the clip.", answer: "What is Get Up by NewJeans?", audio: "snippets/music-600.mp3", used: false },
-            { value: 800, clue: "Name the song and the artist from the clip.", answer: "What is Smooth Criminal by Michael Jackson?", audio: "snippets/music-800.mp3", used: false },
-            { value: 1000, clue: "Name the song and the artist from the clip.", answer: "What is Good Days by SZA?", audio: "snippets/music-1000.mp3", used: false },
-          ]
-        },
-      ],
-      activeClue: null,
-      finalJeopardy: {
-        category: "VenusHacks",
-        clue: "How many hours is VenusHacks 2026?",
-        answer: "What is 26 hours?",
-        stage: "idle", // idle | prompt | category | wagers | clue | answer | results
-        wagers: {},    // { teamIdx: number }
-        results: {},   // { teamIdx: "correct" | "wrong" }
-        timer: null,
-        timeLeft: 40,
-      },
-      finalTriggered: false,
-    };
+    // =================== State (built from game config) ===================
+    let CFG;
+    let STATE;
+    let FINAL_DURATION_S;
+    let PROFILE_LIST = [];
+    let PROFILE_MAP = {};
+    let selectedProfileId = null;
 
-    const FINAL_DURATION_S = 40;
+    function buildStateFromConfig(cfg) {
+      const teams = (cfg.teams || []).map((name) => ({
+        name: typeof name === "string" ? name : name.name || "Team",
+        score: 0,
+      }));
+      if (!teams.length) teams.push({ name: "Team 1", score: 0 });
+
+      const categories = (cfg.categories || []).map((cat) => ({
+        name: cat.name,
+        note: cat.note || "",
+        clues: (cat.clues || []).map((q) => ({
+          value: q.value,
+          clue: q.clue,
+          answer: q.answer,
+          audio: q.audio || null,
+          used: false,
+        })),
+      }));
+
+      const fj = cfg.finalJeopardy || {};
+      const duration = Number(cfg.finalDurationSeconds) || 40;
+
+      return {
+        teams,
+        categories,
+        activeClue: null,
+        finalJeopardy: {
+          category: fj.category || "Final Jeopardy",
+          clue: fj.clue || "",
+          answer: fj.answer || "",
+          stage: "idle",
+          wagers: {},
+          results: {},
+          timer: null,
+          timeLeft: duration,
+        },
+        finalTriggered: false,
+      };
+    }
+
+    const SETUP_MIN_TEAMS = 2;
+    const SETUP_MAX_TEAMS = 10;
 
     // =================== Helpers ===================
     const $ = (id) => document.getElementById(id);
     const fmt = (n) => (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString();
+
+    function boardDisplayTitle(cfg) {
+      return (cfg && (cfg.gameTitle || cfg.title)) || "JEOPARDY!";
+    }
+
+    function applyConfigChrome(cfg) {
+      document.title = cfg.pageTitle || cfg.title || "Jeopardy!";
+      const titleEl = $("game-title");
+      if (titleEl) titleEl.textContent = boardDisplayTitle(cfg);
+
+      const themePath = cfg.themeMusic || "assets/audio/jeopardy-theme.mp3";
+      const src = $("bg-music-source");
+      if (src) src.src = themePath;
+      const bg = $("bg-music");
+      if (bg) {
+        try { bg.load(); } catch {}
+      }
+
+      const vol = $("music-volume");
+      if (vol && cfg.themeVolume != null) {
+        vol.value = String(cfg.themeVolume);
+      }
+      if (bg && vol) {
+        bg.volume = Number(vol.value) / 100;
+      }
+
+      syncTeamCountCss(STATE.teams.length);
+      document.documentElement.style.setProperty(
+        "--category-count",
+        String(Math.max(1, STATE.categories.length))
+      );
+
+      const musicBtn = $("music-btn");
+      if (musicBtn) {
+        musicBtn.title =
+          "Play or pause theme music (loops). File: " + themePath;
+      }
+    }
+
+    function syncTeamCountCss(count) {
+      document.documentElement.style.setProperty(
+        "--team-count",
+        String(Math.max(1, count))
+      );
+    }
+
+    function configTeamNameAt(i) {
+      const list = CFG.teams || [];
+      const entry = list[i];
+      if (entry == null) return null;
+      return typeof entry === "string" ? entry : entry.name || null;
+    }
+
+    function defaultSetupName(i, teamCount) {
+      const cfgLen = (CFG.teams || []).length;
+      if (teamCount === cfgLen) {
+        const fromCfg = configTeamNameAt(i);
+        if (fromCfg) return fromCfg;
+      }
+      return "Team " + (i + 1);
+    }
+
+    function clampSetupTeamCount(n) {
+      const raw = Number(n);
+      const len = (CFG.teams || []).length;
+      const fallback = len >= SETUP_MIN_TEAMS ? len : SETUP_MIN_TEAMS;
+      const v = Number.isFinite(raw) ? raw : fallback;
+      return Math.min(SETUP_MAX_TEAMS, Math.max(SETUP_MIN_TEAMS, v));
+    }
+
+    function readSetupNameInputs() {
+      return [...document.querySelectorAll("#setup-team-list input[data-team-index]")].map(
+        (el) => el.value
+      );
+    }
+
+    function renderSetupTeamInputs(teamCount, previousNames) {
+      const list = $("setup-team-list");
+      list.innerHTML = "";
+      for (let i = 0; i < teamCount; i++) {
+        const row = document.createElement("div");
+        row.className = "setup-team-row";
+        const label = document.createElement("label");
+        label.setAttribute("for", "setup-team-name-" + i);
+        label.textContent = "Team " + (i + 1);
+        const input = document.createElement("input");
+        input.type = "text";
+        input.id = "setup-team-name-" + i;
+        input.dataset.teamIndex = String(i);
+        input.autocomplete = "off";
+        input.spellcheck = false;
+        const prev =
+          previousNames && previousNames[i] != null && String(previousNames[i]).trim() !== ""
+            ? String(previousNames[i]).trim()
+            : defaultSetupName(i, teamCount);
+        input.value = prev;
+        row.appendChild(label);
+        row.appendChild(input);
+        list.appendChild(row);
+      }
+    }
+
+    function populateSetupTeamCountSelect(selected) {
+      const sel = $("setup-team-count");
+      sel.innerHTML = "";
+      for (let n = SETUP_MIN_TEAMS; n <= SETUP_MAX_TEAMS; n++) {
+        const opt = document.createElement("option");
+        opt.value = String(n);
+        opt.textContent = String(n);
+        if (n === selected) opt.selected = true;
+        sel.appendChild(opt);
+      }
+    }
+
+    function applySelectedProfile(profileId, options) {
+      const opts = options || {};
+      const id = profileId || selectedProfileId || PROFILE_LIST[0]?.id;
+      const cfg = PROFILE_MAP[id];
+      if (!cfg) return false;
+
+      selectedProfileId = id;
+      CFG = cfg;
+      STATE = buildStateFromConfig(CFG);
+      FINAL_DURATION_S = Number(CFG.finalDurationSeconds) || 40;
+      applyConfigChrome(CFG);
+
+      const setupTitle = $("setup-game-title");
+      if (setupTitle) setupTitle.textContent = boardDisplayTitle(CFG);
+
+      if (!opts.keepTeamInputs) {
+        const count = clampSetupTeamCount((CFG.teams || []).length);
+        populateSetupTeamCountSelect(count);
+        renderSetupTeamInputs(
+          count,
+          Array.from({ length: count }, (_, i) => defaultSetupName(i, count))
+        );
+      }
+      return true;
+    }
+
+    function renderProfilePicker() {
+      const list = $("setup-profile-list");
+      if (!list) return;
+      list.innerHTML = "";
+      if (!PROFILE_LIST.length) {
+        const empty = document.createElement("p");
+        empty.className = "setup-error";
+        empty.textContent =
+          "No game slots found. Add objects to window.GAME_PROFILES in config/game-config.js.";
+        list.appendChild(empty);
+        return;
+      }
+      PROFILE_LIST.forEach((entry) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "setup-profile-card";
+        btn.setAttribute("role", "option");
+        btn.setAttribute(
+          "aria-pressed",
+          entry.id === selectedProfileId ? "true" : "false"
+        );
+        btn.dataset.profileId = entry.id;
+        btn.innerHTML =
+          '<div class="profile-title"></div><p class="profile-blurb"></p>';
+        btn.querySelector(".profile-title").textContent =
+          entry.title || entry.id;
+        btn.querySelector(".profile-blurb").textContent =
+          entry.description || "";
+        btn.addEventListener("click", () => {
+          if (entry.id === selectedProfileId) return;
+          applySelectedProfile(entry.id);
+          renderProfilePicker();
+          $("setup-error").textContent = "";
+        });
+        list.appendChild(btn);
+      });
+    }
+
+    function openSetupScreen(options) {
+      const opts = options || {};
+      if (opts.profileId) {
+        applySelectedProfile(opts.profileId, { keepTeamInputs: true });
+      } else if (!CFG && selectedProfileId) {
+        applySelectedProfile(selectedProfileId, { keepTeamInputs: true });
+      }
+
+      const count = clampSetupTeamCount(
+        opts.count != null ? opts.count : (CFG.teams || []).length
+      );
+      const names =
+        opts.names && opts.names.length
+          ? opts.names
+          : Array.from({ length: count }, (_, i) => defaultSetupName(i, count));
+
+      $("setup-error").textContent = "";
+      const setupTitle = $("setup-game-title");
+      if (setupTitle && CFG) setupTitle.textContent = boardDisplayTitle(CFG);
+
+      renderProfilePicker();
+      populateSetupTeamCountSelect(count);
+      renderSetupTeamInputs(count, names);
+
+      $("setup-screen").hidden = false;
+      $("game-main").hidden = true;
+      $("overlay").classList.remove("active");
+      $("final-overlay").classList.remove("active");
+    }
+
+    function resetGameProgress() {
+      STATE.teams.forEach((t) => (t.score = 0));
+      STATE.categories.forEach((c) => c.clues.forEach((q) => (q.used = false)));
+      STATE.activeClue = null;
+      stopAndResetClueAudio();
+      stopFinalTimer();
+      pauseMusicIfPlaying();
+      STATE.finalJeopardy.stage = "idle";
+      STATE.finalJeopardy.wagers = {};
+      STATE.finalJeopardy.results = {};
+      STATE.finalJeopardy.timeLeft = FINAL_DURATION_S;
+      STATE.finalTriggered = false;
+    }
+
+    function startGameFromSetup() {
+      const teamCount = clampSetupTeamCount($("setup-team-count").value);
+      const rawNames = readSetupNameInputs();
+      const names = [];
+      let firstBad = -1;
+      for (let i = 0; i < teamCount; i++) {
+        const trimmed = (rawNames[i] || "").trim();
+        if (!trimmed) {
+          if (firstBad < 0) firstBad = i;
+          names.push("");
+        } else {
+          names.push(trimmed);
+        }
+      }
+      if (firstBad >= 0) {
+        $("setup-error").textContent =
+          "Every team needs a name (Team " + (firstBad + 1) + " is empty).";
+        const badInput = document.querySelector(
+          '#setup-team-list input[data-team-index="' + firstBad + '"]'
+        );
+        if (badInput) badInput.focus();
+        return;
+      }
+      $("setup-error").textContent = "";
+      STATE.teams = names.map((name) => ({ name, score: 0 }));
+      syncTeamCountCss(STATE.teams.length);
+      $("setup-screen").hidden = true;
+      $("game-main").hidden = false;
+      renderScoreboard();
+      renderBoard();
+    }
+
+    function boardRowCount() {
+      if (!STATE.categories.length) return 0;
+      return Math.max(...STATE.categories.map((c) => c.clues.length));
+    }
 
     function findClue(catIdx, valIdx) {
       return STATE.categories[catIdx].clues[valIdx];
@@ -1126,10 +1561,17 @@
         c.textContent = cat.name;
         root.appendChild(c);
       });
-      for (let row = 0; row < 5; row++) {
+      const rows = boardRowCount();
+      for (let row = 0; row < rows; row++) {
         STATE.categories.forEach((cat, catIdx) => {
           const clue = cat.clues[row];
           const cell = document.createElement("div");
+          if (!clue) {
+            cell.className = "clue-cell used";
+            cell.textContent = "";
+            root.appendChild(cell);
+            return;
+          }
           cell.className = "clue-cell" + (clue.used ? " used" : "");
           cell.textContent = "$" + clue.value;
           if (!clue.used) {
@@ -1558,6 +2000,7 @@
     }
 
     // =================== Events ===================
+    function bindGameEvents() {
     $("reveal-btn").addEventListener("click", revealAnswer);
     $("skip-btn").addEventListener("click", closeOverlay);
     $("deduct-toggle").addEventListener("change", refreshAwardLabels);
@@ -1567,22 +2010,37 @@
     });
 
     $("reset-btn").addEventListener("click", () => {
-      if (!confirm("Reset all scores and re-enable every clue?")) return;
-      STATE.teams.forEach((t) => (t.score = 0));
-      STATE.categories.forEach((c) => c.clues.forEach((q) => (q.used = false)));
-      STATE.activeClue = null;
-      stopAndResetClueAudio();
-      stopFinalTimer();
-      pauseMusicIfPlaying();
-      STATE.finalJeopardy.stage = "idle";
-      STATE.finalJeopardy.wagers = {};
-      STATE.finalJeopardy.results = {};
-      STATE.finalJeopardy.timeLeft = FINAL_DURATION_S;
-      STATE.finalTriggered = false;
-      $("overlay").classList.remove("active");
-      $("final-overlay").classList.remove("active");
-      renderScoreboard();
-      renderBoard();
+      if (
+        !confirm(
+          "Reset all scores, re-enable every clue, and return to game setup?"
+        )
+      )
+        return;
+      const savedNames = STATE.teams.map((t) => t.name);
+      const savedCount = STATE.teams.length;
+      const savedProfile = selectedProfileId;
+      resetGameProgress();
+      openSetupScreen({
+        profileId: savedProfile,
+        count: savedCount,
+        names: savedNames,
+      });
+    });
+
+    $("setup-team-count").addEventListener("change", () => {
+      const teamCount = clampSetupTeamCount($("setup-team-count").value);
+      $("setup-team-count").value = String(teamCount);
+      const previous = readSetupNameInputs();
+      renderSetupTeamInputs(teamCount, previous);
+      $("setup-error").textContent = "";
+    });
+
+    $("setup-start-btn").addEventListener("click", startGameFromSetup);
+    $("setup-team-list").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        startGameFromSetup();
+      }
     });
 
     document.addEventListener("keydown", (e) => {
@@ -1657,7 +2115,7 @@
         try {
           await bgMusic.play();
         } catch {
-          alert("Could not start audio. Click Music again, or check that jeopardy-theme.mp3 is in the same folder as index.html.");
+          alert("Could not start audio. Click Music again, or check that " + (CFG.themeMusic || "assets/audio/jeopardy-theme.mp3") + " is reachable from the site root.");
           return;
         }
       } else {
@@ -1716,10 +2174,66 @@
         syncClueAudioToolbar();
       });
     })();
+    }
 
-    // =================== Init ===================
-    renderScoreboard();
-    renderBoard();
+    function loadProfilesFromConfig() {
+      const raw = window.GAME_PROFILES;
+      let profiles = [];
+      if (Array.isArray(raw)) {
+        profiles = raw.filter((p) => p && p.id);
+      } else if (raw && typeof raw === "object") {
+        profiles = Object.keys(raw).map((id) => {
+          const p = raw[id] || {};
+          return p.id ? p : Object.assign({ id: id }, p);
+        });
+      }
+      if (!profiles.length) return null;
+
+      const map = {};
+      const list = profiles.map((p) => {
+        map[p.id] = p;
+        return {
+          id: p.id,
+          title: p.title || p.id,
+          description: p.description || "",
+        };
+      });
+      const defaultId =
+        window.GAME_DEFAULT_PROFILE ||
+        (window.GAME_CONFIG && window.GAME_CONFIG.id) ||
+        list[0].id;
+      return { list, map, defaultId };
+    }
+
+    function bootGame() {
+      const loaded = loadProfilesFromConfig();
+
+      if (!loaded) {
+        document.body.innerHTML =
+          "<p style='color:#fff;padding:2rem;font-family:sans-serif'>Missing game slots. Edit <code>config/game-config.js</code> and add objects to <code>window.GAME_PROFILES</code> (see comments at the top of that file).</p>";
+        return;
+      }
+
+      PROFILE_LIST = loaded.list.filter((e) => loaded.map[e.id]);
+      PROFILE_MAP = loaded.map;
+      selectedProfileId =
+        (loaded.defaultId && PROFILE_MAP[loaded.defaultId]
+          ? loaded.defaultId
+          : PROFILE_LIST[0] && PROFILE_LIST[0].id) || null;
+
+      if (!selectedProfileId || !PROFILE_MAP[selectedProfileId]) {
+        document.body.innerHTML =
+          "<p style='color:#fff;padding:2rem;font-family:sans-serif'>No playable slots found in <code>config/game-config.js</code>.</p>";
+        return;
+      }
+
+      applySelectedProfile(selectedProfileId);
+      // Show setup before binding so a later event-wiring error cannot leave the board up.
+      openSetupScreen();
+      bindGameEvents();
+    }
+
+    bootGame();
   </script>
 </body>
 </html>

@@ -1,5 +1,7 @@
 JEOPARDY — CLUES & CORRECT RESPONSES
 =====================================
+Profile: hack-retreat
+(Generated from config/game-config.js → slot "hack-retreat" — edit that file, then run: node scripts/sync-answers.js hack-retreat)
 
 --- FINAL JEOPARDY ---
 Category: VenusHacks
@@ -90,30 +92,34 @@ $1000
 Clue: Earth's deepest measured ocean floor lies along this trench east of the Philippines.
 Answer: What is the Mariana Trench?
 
---- MUSIC (name that tune) ---
-Teams should name song and artist. Audio: snippets/music-200.mp3 … music-1000.mp3
-
+--- MUSIC (Name that tune — put clips in assets/snippets/ and set each clue's audio path.) ---
 $200
 Song: Every Summertime — Artist: NIKI
+Audio: assets/snippets/music-200.mp3
 Clue: Name the song and the artist from the clip.
 Answer: What is Every Summertime by NIKI?
 
 $400
 Song: Beaches — Artist: beabadoobee
+Audio: assets/snippets/music-400.mp3
 Clue: Name the song and the artist from the clip.
 Answer: What is Beaches by beabadoobee?
 
 $600
 Song: Get Up — Artist: NewJeans
+Audio: assets/snippets/music-600.mp3
 Clue: Name the song and the artist from the clip.
 Answer: What is Get Up by NewJeans?
 
 $800
 Song: Smooth Criminal — Artist: Michael Jackson
+Audio: assets/snippets/music-800.mp3
 Clue: Name the song and the artist from the clip.
 Answer: What is Smooth Criminal by Michael Jackson?
 
 $1000
 Song: Good Days — Artist: SZA
+Audio: assets/snippets/music-1000.mp3
 Clue: Name the song and the artist from the clip.
 Answer: What is Good Days by SZA?
+
