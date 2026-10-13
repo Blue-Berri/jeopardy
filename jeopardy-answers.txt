@@ -1,0 +1,119 @@
+JEOPARDY — CLUES & CORRECT RESPONSES
+=====================================
+
+--- FINAL JEOPARDY ---
+Category: VenusHacks
+Clue: How many hours is VenusHacks 2026?
+Answer: What is 26 hours?
+
+--- HACK ---
+$200
+Clue: Hack at UCI's Platinum sponsorship tier costs this many U.S. dollars.
+Answer: What is $6,000?
+
+$400
+Clue: The year Hack at UCI hosted its first hackathon.
+Answer: What is 2014?
+
+$600
+Clue: This conference started after organizers from VH modeled their event on Hack at UCI's structure.
+Answer: What is Designathon?
+
+$800
+Clue: She has been a Hack CEO, WiCS copresident, and judged at Irvine Hacks this year.
+Answer: Who is Angela Liu?
+
+$1000
+Clue: The venue where the very first HackUCI was held. (Host: bonus if they explain why it was there.)
+Answer: What is the OC Esports Arena? (accept: Orange County Esports Arena)
+
+--- CS / INFORMATICS ---
+$200
+Clue: This traversal uses a queue and explores a graph level by level from a start node.
+Answer: What is BFS (Breadth-First Search)?
+
+$400
+Clue: This low-cost method has participants think aloud while trying tasks on an interface.
+Answer: What is usability testing? (accept: think-aloud usability test)
+
+$600
+Clue: This umbrella process organizes work into short cycles with standups, backlog grooming, and sprint reviews.
+Answer: What is Agile (Scrum)?
+
+$800
+Clue: This optimization approach updates model parameters from one example (or a tiny mini-batch) at a time instead of waiting for the full dataset pass.
+Answer: What is stochastic gradient descent (SGD)?
+
+$1000
+Clue: In HCI, this Don Norman concept describes the actions an object suggests to a user before any instructions are read.
+Answer: What is an affordance?
+
+--- IAN ---
+$200
+Clue: Ian was born on this date.
+Answer: What is April 30?
+
+$400
+Clue: This is Ian's username on Discord.
+Answer: What is "ianwearshat"?
+
+$600
+Clue: Ian is minoring in this minor.
+Answer: What is Statistics?
+
+$800
+Clue: This is one of Ian's favorite franchises.
+Answer: What is Star Wars?
+
+$1000
+Clue: Before college, Ian competed in this robotics league.
+Answer: What is FIRST Tech Challenge (robotics)?
+
+--- TRIVIA ---
+$200
+Clue: The only U.S. state that begins with two vowels.
+Answer: What is Iowa?
+
+$400
+Clue: This planet rotates on its side, with an axial tilt of about 98°.
+Answer: What is Uranus?
+
+$600
+Clue: Many tourists picture Sydney or Melbourne — but this planned city inland is Australia's actual national capital.
+Answer: What is Canberra?
+
+$800
+Clue: This Italian Renaissance artist painted the Mona Lisa.
+Answer: Who is Leonardo da Vinci?
+
+$1000
+Clue: Earth's deepest measured ocean floor lies along this trench east of the Philippines.
+Answer: What is the Mariana Trench?
+
+--- MUSIC (name that tune) ---
+Teams should name song and artist. Audio: snippets/music-200.mp3 … music-1000.mp3
+
+$200
+Song: Every Summertime — Artist: NIKI
+Clue: Name the song and the artist from the clip.
+Answer: What is Every Summertime by NIKI?
+
+$400
+Song: Beaches — Artist: beabadoobee
+Clue: Name the song and the artist from the clip.
+Answer: What is Beaches by beabadoobee?
+
+$600
+Song: Get Up — Artist: NewJeans
+Clue: Name the song and the artist from the clip.
+Answer: What is Get Up by NewJeans?
+
+$800
+Song: Smooth Criminal — Artist: Michael Jackson
+Clue: Name the song and the artist from the clip.
+Answer: What is Smooth Criminal by Michael Jackson?
+
+$1000
+Song: Good Days — Artist: SZA
+Clue: Name the song and the artist from the clip.
+Answer: What is Good Days by SZA?

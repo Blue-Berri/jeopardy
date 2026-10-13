@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jeopardy! - 5 Teams</title>
+  <style>
+    :root {
+      --jeopardy-blue: #060CE9;
+      --jeopardy-blue-deep: #02029B;
+      --jeopardy-gold: #FFCC00;
+      --jeopardy-gold-soft: #E8B923;
+      --bg: #0A0A1F;
+      --bg-soft: #14143A;
+      --text: #FFFFFF;
+      --muted: #8A8AB8;
+      --used: #1A1A3A;
+      --danger: #C0392B;
+      --success: #27AE60;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Georgia, "Times New Roman", serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ============ Scoreboard ============ */
+    .scoreboard {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      padding: 12px 16px;
+      background: linear-gradient(180deg, var(--bg-soft) 0%, var(--bg) 100%);
+      border-bottom: 3px solid var(--jeopardy-gold);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    }
+
+    .team {
+      background: var(--jeopardy-blue-deep);
+      border: 2px solid var(--jeopardy-gold);
+      border-radius: 6px;
+      padding: 10px 12px;
+      text-align: center;
+      transition: transform 0.15s ease;
+    }
+
+    .team:hover { transform: translateY(-1px); }
+
+    .team-name {
+      font-size: 1.05rem;
+      font-weight: bold;
+      color: var(--jeopardy-gold);
+      margin: 0 0 6px 0;
+      outline: none;
+      cursor: text;
+      min-height: 1.2em;
+      letter-spacing: 0.5px;
+    }
+
+    .team-name:focus {
+      background: rgba(255, 204, 0, 0.15);
+      border-radius: 3px;
+    }
+
+    .team-score {
+      font-family: "Courier New", monospace;
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: #FFFFFF;
+      margin: 4px 0;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+    }
+
+    .team-score.negative { color: #FF6B6B; }
+
+    .team-adjust {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .team-adjust button {
+      background: var(--bg);
+      color: var(--jeopardy-gold);
+      border: 1px solid var(--jeopardy-gold-soft);
+      border-radius: 3px;
+      padding: 2px 8px;
+      font-family: inherit;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .team-adjust button:hover { background: var(--jeopardy-gold); color: var(--bg); }
+
+    /* ============ Top bar ============ */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--bg-soft);
+    }
+
+    .title {
+      font-family: "Impact", "Arial Black", sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 3px;
+      color: var(--jeopardy-gold);
+      margin: 0;
+      text-shadow: 2px 2px 0 var(--jeopardy-blue);
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .music-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .music-btn.active {
+      background: var(--jeopardy-gold) !important;
+      color: var(--bg) !important;
+      border-color: var(--jeopardy-gold) !important;
+    }
+
+    .music-volume-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-family: system-ui, sans-serif;
+    }
+
+    .music-volume-label input[type="range"] {
+      width: 88px;
+      accent-color: var(--jeopardy-gold);
+      cursor: pointer;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .controls button {
+      background: var(--bg-soft);
+      color: var(--text);
+      border: 1px solid var(--muted);
+      border-radius: 4px;
+      padding: 6px 14px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .controls button:hover { background: var(--jeopardy-gold); color: var(--bg); border-color: var(--jeopardy-gold); }
+
+    /* ============ Board ============ */
+    .board {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      padding: 16px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .category {
+      background: var(--jeopardy-blue);
+      color: var(--text);
+      text-transform: uppercase;
+      font-weight: bold;
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+      text-align: center;
+      padding: 18px 8px;
+      min-height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #000;
+      text-shadow: 2px 2px 0 #000;
+      border-radius: 2px;
+    }
+
+    .clue-cell {
+      background: var(--jeopardy-blue);
+      color: var(--jeopardy-gold);
+      font-family: "Impact", "Arial Black", sans-serif;
+      font-size: 2.4rem;
+      text-align: center;
+      padding: 30px 8px;
+      min-height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #000;
+      text-shadow: 3px 3px 0 #000;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      border-radius: 2px;
+      user-select: none;
+    }
+
+    .clue-cell:hover {
+      background: #1A1FE8;
+      transform: scale(1.02);
+    }
+
+    .clue-cell.used {
+      background: var(--used);
+      color: transparent;
+      text-shadow: none;
+      cursor: default;
+      border-color: #000;
+    }
+
+    .clue-cell.used:hover { transform: none; background: var(--used); }
+
+    /* ============ Overlay ============ */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .overlay.active { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .overlay-card {
+      background: var(--jeopardy-blue);
+      border: 4px solid var(--jeopardy-gold);
+      border-radius: 8px;
+      padding: 40px;
+      max-width: 1100px;
+      width: 100%;
+      max-height: 90vh;
+      overflow: auto;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+    }
+
+    .overlay-meta {
+      color: var(--jeopardy-gold);
+      font-size: 0.95rem;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+
+    .overlay-text {
+      color: #FFFFFF;
+      font-family: "Impact", "Arial Black", sans-serif;
+      font-size: clamp(1.6rem, 4vw, 3rem);
+      line-height: 1.3;
+      letter-spacing: 1px;
+      text-shadow: 3px 3px 0 #000;
+      margin: 30px 0 40px;
+      min-height: 30vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .overlay-card.audio-clue-active .overlay-text {
+      min-height: unset;
+      margin: 12px 0 16px;
+      font-size: clamp(1.2rem, 3vw, 2rem);
+    }
+
+    .overlay-audio-wrap {
+      position: relative;
+      margin: 0 auto 8px;
+      max-width: 560px;
+    }
+
+    .overlay-audio-wrap[hidden] { display: none !important; }
+
+    .overlay-audio-hint {
+      color: rgba(255, 255, 255, 0.88);
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: 0;
+      text-shadow: none;
+      margin: 0 0 12px;
+      line-height: 1.4;
+    }
+
+    /* No native controls — hides total duration / scrub bar (hosts use custom buttons). */
+    #clue-audio {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .clue-audio-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .clue-audio-btn {
+      background: var(--jeopardy-gold);
+      color: var(--bg);
+      border: none;
+      padding: 12px 28px;
+      font-family: "Impact", sans-serif;
+      font-size: 1.05rem;
+      letter-spacing: 1px;
+      cursor: pointer;
+      border-radius: 4px;
+      text-transform: uppercase;
+      transition: transform 0.1s, background 0.15s;
+    }
+
+    .clue-audio-btn:hover {
+      background: #FFD93D;
+      transform: scale(1.04);
+    }
+
+    .clue-audio-btn.secondary {
+      background: rgba(255, 204, 0, 0.22);
+      color: var(--jeopardy-gold);
+      border: 2px solid var(--jeopardy-gold);
+    }
+
+    .clue-audio-btn.secondary:hover {
+      background: rgba(255, 204, 0, 0.38);
+      color: #fff;
+    }
+
+    .overlay-audio-error {
+      color: #ffb4b4;
+      font-family: system-ui, sans-serif;
+      font-size: 0.9rem;
+      margin-top: 10px;
+      line-height: 1.35;
+    }
+
+    .overlay-audio-error[hidden] { display: none !important; }
+
+    .overlay-answer {
+      color: var(--jeopardy-gold);
+      font-style: italic;
+    }
+
+    .overlay-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .reveal-btn {
+      background: var(--jeopardy-gold);
+      color: var(--bg);
+      border: none;
+      padding: 14px 32px;
+      font-family: "Impact", sans-serif;
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+      cursor: pointer;
+      border-radius: 4px;
+      text-transform: uppercase;
+      transition: transform 0.1s, background 0.15s;
+    }
+
+    .reveal-btn:hover { background: #FFD93D; transform: scale(1.04); }
+
+    .award-section {
+      display: none;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 204, 0, 0.3);
+    }
+
+    .award-section.visible { display: block; }
+
+    .award-label {
+      color: var(--jeopardy-gold);
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .award-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .award-team {
+      background: var(--bg);
+      color: var(--jeopardy-gold);
+      border: 2px solid var(--jeopardy-gold);
+      padding: 12px 8px;
+      font-family: inherit;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.15s;
+    }
+
+    .award-team:hover {
+      background: var(--jeopardy-gold);
+      color: var(--bg);
+      transform: translateY(-2px);
+    }
+
+    .award-team .team-label {
+      display: block;
+      font-weight: bold;
+      font-size: 0.95rem;
+    }
+
+    .award-team .team-delta {
+      display: block;
+      font-family: "Courier New", monospace;
+      font-size: 1.1rem;
+      margin-top: 4px;
+    }
+
+    .award-team .team-delta.minus { color: #FF6B6B; }
+    .award-team:hover .team-delta { color: inherit; }
+
+    .skip-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 8px;
+    }
+
+    .skip-btn {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--muted);
+      padding: 8px 18px;
+      font-family: inherit;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.15s;
+    }
+
+    .skip-btn:hover { color: var(--text); border-color: var(--text); }
+
+    .award-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--jeopardy-gold);
+      font-size: 0.85rem;
+      margin: 12px 0;
+      letter-spacing: 1px;
+    }
+
+    .award-toggle input { cursor: pointer; }
+
+    /* ============ Final Jeopardy ============ */
+    .final-overlay-card {
+      background: linear-gradient(180deg, var(--jeopardy-blue-deep) 0%, var(--jeopardy-blue) 100%);
+      border: 4px solid var(--jeopardy-gold);
+      border-radius: 10px;
+      padding: 36px 40px;
+      max-width: 1100px;
+      width: 100%;
+      max-height: 92vh;
+      overflow: auto;
+      text-align: center;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.85), 0 0 0 6px rgba(255, 204, 0, 0.15);
+    }
+
+    .fj-stage { display: none; }
+    .fj-stage.active { display: block; }
+
+    .fj-eyebrow {
+      color: var(--jeopardy-gold);
+      letter-spacing: 6px;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .fj-headline {
+      font-family: "Impact", "Arial Black", sans-serif;
+      font-size: clamp(2rem, 6vw, 4rem);
+      color: var(--jeopardy-gold);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-shadow: 3px 3px 0 #000;
+      margin: 14px 0 10px;
+    }
+
+    .fj-sub {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 1rem;
+      margin: 8px 0 22px;
+      line-height: 1.5;
+    }
+
+    .fj-category-title {
+      font-family: "Impact", "Arial Black", sans-serif;
+      font-size: clamp(2.4rem, 7vw, 4.6rem);
+      color: #FFFFFF;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-shadow: 4px 4px 0 #000;
+      margin: 30px 0;
+    }
+
+    .fj-clue {
+      color: #FFFFFF;
+      font-family: "Impact", "Arial Black", sans-serif;
+      font-size: clamp(1.6rem, 4vw, 3rem);
+      line-height: 1.3;
+      letter-spacing: 1px;
+      text-shadow: 3px 3px 0 #000;
+      margin: 24px 0;
+      min-height: 22vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fj-answer {
+      color: var(--jeopardy-gold);
+      font-style: italic;
+    }
+
+    .fj-button {
+      background: var(--jeopardy-gold);
+      color: var(--bg);
+      border: none;
+      padding: 14px 36px;
+      font-family: "Impact", sans-serif;
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+      cursor: pointer;
+      border-radius: 4px;
+      text-transform: uppercase;
+      transition: transform 0.1s, background 0.15s;
+    }
+
+    .fj-button:hover { background: #FFD93D; transform: scale(1.04); }
+    .fj-button:disabled { background: #5a5a7a; color: var(--bg); cursor: not-allowed; transform: none; }
+
+    .fj-button.ghost {
+      background: transparent;
+      color: var(--jeopardy-gold);
+      border: 2px solid var(--jeopardy-gold);
+    }
+    .fj-button.ghost:hover { background: var(--jeopardy-gold); color: var(--bg); }
+
+    .fj-wager-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin: 16px 0 18px;
+    }
+
+    .fj-wager {
+      background: var(--bg);
+      border: 2px solid var(--jeopardy-gold);
+      border-radius: 6px;
+      padding: 14px 12px;
+      text-align: center;
+    }
+
+    .fj-wager.disqualified {
+      border-color: #5a5a7a;
+      opacity: 0.55;
+    }
+
+    .fj-wager .fj-team-name {
+      font-weight: bold;
+      color: var(--jeopardy-gold);
+      font-size: 1rem;
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .fj-wager .fj-team-score {
+      font-family: "Courier New", monospace;
+      color: #FFFFFF;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+
+    .fj-wager input[type="number"] {
+      width: 100%;
+      background: var(--bg-soft);
+      color: #FFFFFF;
+      border: 1px solid var(--jeopardy-gold-soft);
+      border-radius: 4px;
+      padding: 8px 10px;
+      font-family: "Courier New", monospace;
+      font-size: 1.1rem;
+      text-align: center;
+      outline: none;
+    }
+
+    .fj-wager input[type="number"]:focus { border-color: var(--jeopardy-gold); }
+    .fj-wager input[type="number"].invalid { border-color: #FF6B6B; }
+
+    .fj-wager .fj-disq-label {
+      color: #FF6B6B;
+      font-size: 0.85rem;
+      font-style: italic;
+      letter-spacing: 1px;
+    }
+
+    .fj-error {
+      color: #FF6B6B;
+      font-size: 0.85rem;
+      min-height: 1.2em;
+      margin: -4px 0 10px;
+    }
+
+    .fj-timer {
+      width: 100%;
+      max-width: 600px;
+      margin: 18px auto 8px;
+    }
+
+    .fj-timer-bar {
+      width: 100%;
+      height: 18px;
+      background: var(--bg-soft);
+      border: 1px solid var(--jeopardy-gold);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .fj-timer-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, var(--jeopardy-gold), #FFD93D);
+      transition: width 0.25s linear;
+    }
+
+    .fj-timer-text {
+      color: var(--jeopardy-gold);
+      font-family: "Courier New", monospace;
+      font-size: 1.2rem;
+      margin-top: 6px;
+    }
+
+    .fj-adjudicate-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      max-width: 640px;
+      margin: 14px auto 0;
+    }
+
+    .fj-adjudicate-row {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr auto;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg);
+      border: 1px solid var(--jeopardy-gold-soft);
+      border-radius: 4px;
+      padding: 8px 10px;
+    }
+
+    .fj-adjudicate-row .fj-row-name {
+      text-align: left;
+      color: var(--jeopardy-gold);
+      font-weight: bold;
+    }
+
+    .fj-adjudicate-row .fj-row-name small {
+      display: block;
+      color: rgba(255,255,255,0.7);
+      font-weight: normal;
+      font-family: "Courier New", monospace;
+      font-size: 0.8rem;
+    }
+
+    .fj-adjudicate-row .fj-live-score {
+      display: block;
+      margin-top: 6px;
+      color: #FFFFFF;
+      font-family: "Courier New", monospace;
+      font-size: 0.95rem;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+
+    .fj-adjudicate-row .fj-live-score.neg { color: #FF8A8A; }
+
+    .fj-adjudicate-row button {
+      background: var(--bg-soft);
+      color: #FFFFFF;
+      border: 1px solid var(--jeopardy-gold-soft);
+      border-radius: 4px;
+      padding: 8px 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .fj-adjudicate-row button.correct { color: #6EE7B7; border-color: #6EE7B7; }
+    .fj-adjudicate-row button.wrong { color: #FF8A8A; border-color: #FF8A8A; }
+    .fj-adjudicate-row button:hover { background: var(--jeopardy-gold); color: var(--bg); border-color: var(--jeopardy-gold); }
+    .fj-adjudicate-row button.selected { background: var(--jeopardy-gold); color: var(--bg); border-color: var(--jeopardy-gold); }
+    .fj-adjudicate-row .fj-mini-adjust {
+      display: flex;
+      gap: 6px;
+      justify-content: flex-end;
+      align-items: center;
+    }
+    .fj-adjudicate-row .fj-mini-adjust button {
+      min-width: 58px;
+      font-size: 0.82rem;
+      padding: 6px 8px;
+      border-color: var(--muted);
+      color: var(--jeopardy-gold);
+    }
+
+    .fj-results-list {
+      list-style: none;
+      padding: 0;
+      margin: 16px auto 20px;
+      max-width: 600px;
+      text-align: left;
+    }
+
+    .fj-results-row {
+      display: grid;
+      grid-template-columns: 40px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border: 1px solid var(--jeopardy-gold-soft);
+      border-radius: 6px;
+      margin-bottom: 6px;
+      background: var(--bg);
+    }
+
+    .fj-results-row.winner {
+      background: linear-gradient(90deg, rgba(255, 204, 0, 0.25), rgba(255, 204, 0, 0.05));
+      border-color: var(--jeopardy-gold);
+      box-shadow: 0 0 0 2px var(--jeopardy-gold) inset;
+    }
+
+    .fj-results-row .rank { color: var(--jeopardy-gold); font-weight: bold; font-size: 1.1rem; text-align: center; }
+    .fj-results-row .name { color: #FFFFFF; font-weight: bold; }
+    .fj-results-row .name small { display: block; color: rgba(255,255,255,0.6); font-weight: normal; font-size: 0.78rem; }
+    .fj-results-row .score { color: var(--jeopardy-gold); font-family: "Courier New", monospace; font-size: 1.1rem; }
+    .fj-results-row.negative .score { color: #FF8A8A; }
+
+    .fj-winner-banner {
+      font-family: "Impact", sans-serif;
+      color: var(--jeopardy-gold);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      font-size: clamp(1.4rem, 4vw, 2.4rem);
+      text-shadow: 3px 3px 0 #000;
+      margin: 8px 0 14px;
+    }
+
+    .fj-row-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    /* ============ Responsive ============ */
+    @media (max-width: 900px) {
+      .scoreboard { grid-template-columns: repeat(5, 1fr); gap: 4px; padding: 8px; }
+      .team { padding: 6px 4px; }
+      .team-name { font-size: 0.8rem; }
+      .team-score { font-size: 1.1rem; }
+      .team-adjust button { font-size: 0.7rem; padding: 1px 6px; }
+      .category { font-size: 0.75rem; padding: 10px 4px; min-height: 60px; letter-spacing: 0; }
+      .clue-cell { font-size: 1.2rem; padding: 18px 4px; min-height: 70px; }
+      .board { padding: 8px; gap: 3px; }
+      .title { font-size: 1.1rem; letter-spacing: 1px; }
+      .topbar { padding: 8px 10px; }
+      .controls button { padding: 4px 8px; font-size: 0.8rem; }
+      .music-volume-label input[type="range"] { width: 64px; }
+      .overlay-card { padding: 20px; }
+      .final-overlay-card { padding: 20px; }
+      .fj-adjudicate-row { grid-template-columns: 1fr; text-align: center; }
+      .fj-adjudicate-row .fj-row-name { text-align: center; }
+      .fj-adjudicate-row .fj-mini-adjust { justify-content: center; }
+      .fj-results-row { grid-template-columns: 30px 1fr auto; gap: 8px; padding: 8px 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="scoreboard" id="scoreboard"></div>
+
+  <audio id="bg-music" loop preload="none" playsinline>
+    <source src="jeopardy-theme.mp3" type="audio/mpeg" />
+  </audio>
+
+  <div class="topbar">
+    <h1 class="title">JEOPARDY!</h1>
+    <div class="controls">
+      <div class="music-controls">
+        <button type="button" id="music-btn" class="music-btn" aria-pressed="false" title="Play or pause theme music (loops)">Music: Off</button>
+        <label class="music-volume-label">
+          <span class="sr-only">Music volume</span>
+          <span aria-hidden="true">Vol</span>
+          <input type="range" id="music-volume" min="0" max="100" value="35" />
+        </label>
+      </div>
+      <button id="fj-open-btn" title="Open Final Jeopardy manually" style="display:none;">Final Jeopardy</button>
+      <button id="reset-btn" title="Clears all scores and re-enables every clue">Reset Game</button>
+    </div>
+  </div>
+
+  <div class="board" id="board"></div>
+
+  <div class="overlay" id="overlay">
+    <div class="overlay-card">
+      <div class="overlay-meta" id="overlay-meta"></div>
+      <div id="overlay-audio-wrap" class="overlay-audio-wrap" hidden>
+        <p class="overlay-audio-hint" id="overlay-audio-hint"></p>
+        <audio id="clue-audio" preload="none" playsinline></audio>
+        <div class="clue-audio-toolbar" role="group" aria-label="Clip playback">
+          <button type="button" class="clue-audio-btn" id="clue-audio-toggle" aria-pressed="false">Play</button>
+          <button type="button" class="clue-audio-btn secondary" id="clue-audio-replay" title="Start over from the beginning">Replay</button>
+        </div>
+        <p class="overlay-audio-error" id="clue-audio-error" hidden></p>
+      </div>
+      <div class="overlay-text" id="overlay-text"></div>
+      <div class="overlay-buttons">
+        <button class="reveal-btn" id="reveal-btn">Reveal Answer</button>
+      </div>
+      <div class="award-section" id="award-section">
+        <div class="award-label">Award points to:</div>
+        <div class="award-grid" id="award-grid"></div>
+        <label class="award-toggle">
+          <input type="checkbox" id="deduct-toggle" />
+          Deduct on wrong (instead of award)
+        </label>
+        <div class="skip-row">
+          <button class="skip-btn" id="skip-btn">No one / Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="final-overlay">
+    <div class="final-overlay-card">
+      <!-- Stage: prompt -->
+      <div class="fj-stage" data-stage="prompt">
+        <div class="fj-eyebrow">Final Round</div>
+        <div class="fj-headline">Final Jeopardy!</div>
+        <div class="fj-sub" id="fj-prompt-sub">All clues are exhausted. Time for the final round.</div>
+        <div class="fj-row-buttons">
+          <button class="fj-button" id="fj-start-btn">Begin</button>
+          <button class="fj-button ghost" id="fj-cancel-btn">Not Yet</button>
+        </div>
+      </div>
+
+      <!-- Stage: category -->
+      <div class="fj-stage" data-stage="category">
+        <div class="fj-eyebrow">The Category Is</div>
+        <div class="fj-category-title" id="fj-category"></div>
+        <div class="fj-sub">Eligible teams will now place their wagers.</div>
+        <div class="fj-row-buttons">
+          <button class="fj-button" id="fj-to-wagers-btn">Continue to Wagers</button>
+        </div>
+      </div>
+
+      <!-- Stage: wagers -->
+      <div class="fj-stage" data-stage="wagers">
+        <div class="fj-eyebrow">Place Your Wagers</div>
+        <div class="fj-sub">Each eligible team wagers from $0 up to their current score. Disqualified teams ($0 or below) sit this out.</div>
+        <div class="fj-wager-grid" id="fj-wager-grid"></div>
+        <div class="fj-error" id="fj-wager-error"></div>
+        <div class="fj-row-buttons">
+          <button class="fj-button" id="fj-lock-wagers-btn">Lock In &amp; Reveal Clue</button>
+        </div>
+      </div>
+
+      <!-- Stage: clue -->
+      <div class="fj-stage" data-stage="clue">
+        <div class="fj-eyebrow" id="fj-clue-eyebrow">Final Jeopardy</div>
+        <div class="fj-clue" id="fj-clue-text"></div>
+        <div class="fj-timer">
+          <div class="fj-timer-bar"><div class="fj-timer-fill" id="fj-timer-fill"></div></div>
+          <div class="fj-timer-text" id="fj-timer-text">30s</div>
+        </div>
+        <div class="fj-row-buttons">
+          <button class="fj-button" id="fj-reveal-btn">Reveal Answer</button>
+        </div>
+      </div>
+
+      <!-- Stage: answer -->
+      <div class="fj-stage" data-stage="answer">
+        <div class="fj-eyebrow">The Correct Response</div>
+        <div class="fj-clue fj-answer" id="fj-answer-text"></div>
+        <div class="fj-sub">Mark each team's response.</div>
+        <div class="fj-adjudicate-grid" id="fj-adjudicate-grid"></div>
+        <div class="fj-row-buttons">
+          <button class="fj-button" id="fj-to-results-btn">See Results</button>
+        </div>
+      </div>
+
+      <!-- Stage: results -->
+      <div class="fj-stage" data-stage="results">
+        <div class="fj-eyebrow">Final Standings</div>
+        <div class="fj-winner-banner" id="fj-winner-banner"></div>
+        <ul class="fj-results-list" id="fj-results-list"></ul>
+        <div class="fj-row-buttons">
+          <button class="fj-button ghost" id="fj-close-btn">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =================== State ===================
+    const STATE = {
+      teams: [
+        { name: "Team 1", score: 0 },
+        { name: "Team 2", score: 0 },
+        { name: "Team 3", score: 0 },
+        { name: "Team 4", score: 0 },
+        { name: "Team 5", score: 0 },
+      ],
+      categories: [
+        {
+          name: "Hack",
+          clues: [
+            { value: 200,  clue: "Hack at UCI's Platinum sponsorship tier costs this many U.S. dollars.", answer: "What is $6,000?", used: false },
+            { value: 400,  clue: "The year Hack at UCI hosted its first hackathon.", answer: "What is 2014?", used: false },
+            { value: 600,  clue: "This conference started after organizers from VH modeled their event on Hack at UCI's structure.", answer: "What is Designathon?", used: false },
+            { value: 800,  clue: "She has been a Hack CEO, WiCS copresident, and judged at Irvine Hacks this year.", answer: "Who is Angela Liu?", used: false },
+            { value: 1000, clue: "The venue where the very first HackUCI was held. (Host: bonus if they explain why it was there.)", answer: "What is the OC Esports Arena? (accept: Orange County Esports Arena)", used: false },
+          ]
+        },
+        {
+          name: "CS / Informatics",
+          clues: [
+            { value: 200,  clue: "This traversal uses a queue and explores a graph level by level from a start node.", answer: "What is BFS (Breadth-First Search)?", used: false },
+            { value: 400,  clue: "This low-cost method has participants think aloud while trying tasks on an interface.", answer: "What is usability testing? (accept: think-aloud usability test)", used: false },
+            { value: 600,  clue: "This umbrella process organizes work into short cycles with standups, backlog grooming, and sprint reviews.", answer: "What is Agile (Scrum)?", used: false },
+            { value: 800,  clue: "This optimization approach updates model parameters from one example (or a tiny mini-batch) at a time instead of waiting for the full dataset pass.", answer: "What is stochastic gradient descent (SGD)?", used: false },
+            { value: 1000, clue: "In HCI, this Don Norman concept describes the actions an object suggests to a user before any instructions are read.", answer: "What is an affordance?", used: false },
+          ]
+        },
+        {
+          name: "Ian",
+          clues: [
+            { value: 200,  clue: "Ian was born on this date.", answer: "What is April 30?", used: false },
+            { value: 400,  clue: "This is Ian's username on Discord.", answer: "What is \"ianwearshat\"?", used: false },
+            { value: 600,  clue: "Ian is minoring in this minor.", answer: "What is Statistics?", used: false },
+            { value: 800,  clue: "This is one of Ian\u2019s favorite franchises.", answer: "What is Star Wars?", used: false },
+            { value: 1000, clue: "Before college, Ian competed in this robotics league.", answer: "What is FIRST Tech Challenge (robotics)?", used: false },
+          ]
+        },
+        {
+          name: "Trivia",
+          clues: [
+            { value: 200,  clue: "The only U.S. state that begins with two vowels.", answer: "What is Iowa?", used: false },
+            { value: 400,  clue: "This planet rotates on its side, with an axial tilt of about 98\u00B0.", answer: "What is Uranus?", used: false },
+            { value: 600,  clue: "Many tourists picture Sydney or Melbourne \u2014 but this planned city inland is Australia\u2019s actual national capital.", answer: "What is Canberra?", used: false },
+            { value: 800,  clue: "This Italian Renaissance artist painted the Mona Lisa.", answer: "Who is Leonardo da Vinci?", used: false },
+            { value: 1000, clue: "Earth\u2019s deepest measured ocean floor lies along this trench east of the Philippines.", answer: "What is the Mariana Trench?", used: false },
+          ]
+        },
+        {
+          name: "Music",
+          clues: [
+            { value: 200, clue: "Name the song and the artist from the clip.", answer: "What is Every Summertime by NIKI?", audio: "snippets/music-200.mp3", used: false },
+            { value: 400, clue: "Name the song and the artist from the clip.", answer: "What is Beaches by beabadoobee?", audio: "snippets/music-400.mp3", used: false },
+            { value: 600, clue: "Name the song and the artist from the clip.", answer: "What is Get Up by NewJeans?", audio: "snippets/music-600.mp3", used: false },
+            { value: 800, clue: "Name the song and the artist from the clip.", answer: "What is Smooth Criminal by Michael Jackson?", audio: "snippets/music-800.mp3", used: false },
+            { value: 1000, clue: "Name the song and the artist from the clip.", answer: "What is Good Days by SZA?", audio: "snippets/music-1000.mp3", used: false },
+          ]
+        },
+      ],
+      activeClue: null,
+      finalJeopardy: {
+        category: "VenusHacks",
+        clue: "How many hours is VenusHacks 2026?",
+        answer: "What is 26 hours?",
+        stage: "idle", // idle | prompt | category | wagers | clue | answer | results
+        wagers: {},    // { teamIdx: number }
+        results: {},   // { teamIdx: "correct" | "wrong" }
+        timer: null,
+        timeLeft: 40,
+      },
+      finalTriggered: false,
+    };
+
+    const FINAL_DURATION_S = 40;
+
+    // =================== Helpers ===================
+    const $ = (id) => document.getElementById(id);
+    const fmt = (n) => (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString();
+
+    function findClue(catIdx, valIdx) {
+      return STATE.categories[catIdx].clues[valIdx];
+    }
+
+    function refreshFjAnswerLiveTotals() {
+      document.querySelectorAll(".fj-live-score").forEach((el) => {
+        const i = +el.dataset.teamIndex;
+        if (!Number.isFinite(i)) return;
+        const s = STATE.teams[i].score;
+        el.textContent = "Total now: " + fmt(s);
+        el.classList.toggle("neg", s < 0);
+      });
+    }
+
+    function allCluesUsed() {
+      return STATE.categories.every((c) => c.clues.every((q) => q.used));
+    }
+
+    function eligibleTeamIdxs() {
+      return STATE.teams
+        .map((t, i) => ({ t, i }))
+        .filter(({ t }) => t.score > 0)
+        .map(({ i }) => i);
+    }
+
+    // =================== Render ===================
+    function renderScoreboard() {
+      const root = $("scoreboard");
+      root.innerHTML = "";
+      STATE.teams.forEach((team, i) => {
+        const div = document.createElement("div");
+        div.className = "team";
+        div.innerHTML = `
+          <div class="team-name" contenteditable="true" spellcheck="false" data-team="${i}">${escapeHtml(team.name)}</div>
+          <div class="team-score ${team.score < 0 ? "negative" : ""}">${fmt(team.score)}</div>
+          <div class="team-adjust">
+            <button data-adjust="${i}" data-delta="-100" title="-$100">-</button>
+            <button data-adjust="${i}" data-delta="100" title="+$100">+</button>
+          </div>
+        `;
+        root.appendChild(div);
+      });
+
+      root.querySelectorAll(".team-name").forEach((el) => {
+        el.addEventListener("blur", (e) => {
+          const i = +e.target.dataset.team;
+          const txt = e.target.innerText.trim() || `Team ${i + 1}`;
+          STATE.teams[i].name = txt;
+          e.target.innerText = txt;
+        });
+        el.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") { e.preventDefault(); e.target.blur(); }
+        });
+      });
+
+      root.querySelectorAll("[data-adjust]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          const i = +btn.dataset.adjust;
+          const d = +btn.dataset.delta;
+          STATE.teams[i].score += d;
+          renderScoreboard();
+        });
+      });
+    }
+
+    function renderBoard() {
+      const root = $("board");
+      root.innerHTML = "";
+      STATE.categories.forEach((cat) => {
+        const c = document.createElement("div");
+        c.className = "category";
+        c.textContent = cat.name;
+        root.appendChild(c);
+      });
+      for (let row = 0; row < 5; row++) {
+        STATE.categories.forEach((cat, catIdx) => {
+          const clue = cat.clues[row];
+          const cell = document.createElement("div");
+          cell.className = "clue-cell" + (clue.used ? " used" : "");
+          cell.textContent = "$" + clue.value;
+          if (!clue.used) {
+            cell.addEventListener("click", () => openClue(catIdx, row));
+          }
+          root.appendChild(cell);
+        });
+      }
+      syncFinalOpenButton();
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    // =================== Overlay / clue flow ===================
+    let snippetThemeWasPlaying = null;
+
+    function duckThemeForSnippet() {
+      const bg = $("bg-music");
+      if (snippetThemeWasPlaying !== null) return;
+      snippetThemeWasPlaying = !bg.paused;
+      if (snippetThemeWasPlaying) bg.pause();
+    }
+
+    function restoreThemeAfterSnippet() {
+      if (snippetThemeWasPlaying) {
+        $("bg-music").play().catch(() => {});
+      }
+      snippetThemeWasPlaying = null;
+    }
+
+    function syncClueAudioToolbar() {
+      const audio = $("clue-audio");
+      const toggle = $("clue-audio-toggle");
+      if (!toggle) return;
+      if (!audio.dataset.snippetPath) {
+        toggle.textContent = "Play";
+        toggle.setAttribute("aria-pressed", "false");
+        return;
+      }
+      const playing = !audio.paused;
+      toggle.textContent = playing ? "Pause" : "Play";
+      toggle.setAttribute("aria-pressed", playing ? "true" : "false");
+    }
+
+    function stopAndResetClueAudio() {
+      const audio = $("clue-audio");
+      const wrap = $("overlay-audio-wrap");
+      const err = $("clue-audio-error");
+      const card = $("overlay").querySelector(".overlay-card");
+      restoreThemeAfterSnippet();
+      audio.pause();
+      audio.removeAttribute("src");
+      delete audio.dataset.snippetPath;
+      try {
+        audio.load();
+      } catch {}
+      wrap.hidden = true;
+      err.hidden = true;
+      err.textContent = "";
+      $("overlay-text").style.display = "";
+      if (card) card.classList.remove("audio-clue-active");
+      syncClueAudioToolbar();
+    }
+
+    function openClue(catIdx, valIdx) {
+      const clue = findClue(catIdx, valIdx);
+      if (clue.used) return;
+      stopAndResetClueAudio();
+      STATE.activeClue = { catIdx, valIdx };
+
+      $("overlay-meta").textContent =
+        STATE.categories[catIdx].name + " \u2014 $" + clue.value;
+      $("overlay-text").textContent = clue.clue;
+      $("overlay-text").classList.remove("overlay-answer");
+      const overlayCard = $("overlay").querySelector(".overlay-card");
+      if (clue.audio) {
+        $("overlay-audio-wrap").hidden = false;
+        $("overlay-audio-hint").textContent = clue.clue;
+        if (overlayCard) overlayCard.classList.add("audio-clue-active");
+        $("overlay-text").style.display = "none";
+        const audio = $("clue-audio");
+        audio.dataset.snippetPath = clue.audio;
+        audio.src = clue.audio;
+        audio.load();
+        $("clue-audio-error").hidden = true;
+        syncClueAudioToolbar();
+      }
+      $("award-section").classList.remove("visible");
+      $("reveal-btn").style.display = "";
+      $("deduct-toggle").checked = false;
+
+      $("overlay").classList.add("active");
+    }
+
+    function revealAnswer() {
+      if (!STATE.activeClue) return;
+      stopAndResetClueAudio();
+      const { catIdx, valIdx } = STATE.activeClue;
+      const clue = findClue(catIdx, valIdx);
+      $("overlay-text").textContent = clue.answer;
+      $("overlay-text").classList.add("overlay-answer");
+      $("reveal-btn").style.display = "none";
+
+      const grid = $("award-grid");
+      grid.innerHTML = "";
+      STATE.teams.forEach((team, i) => {
+        const btn = document.createElement("button");
+        btn.className = "award-team";
+        const deduct = $("deduct-toggle").checked;
+        const delta = deduct ? -clue.value : clue.value;
+        btn.innerHTML = `
+          <span class="team-label">${escapeHtml(team.name)}</span>
+          <span class="team-delta ${deduct ? "minus" : ""}">${deduct ? "-" : "+"}$${clue.value}</span>
+        `;
+        btn.addEventListener("click", () => awardClue(i, delta));
+        grid.appendChild(btn);
+      });
+
+      $("award-section").classList.add("visible");
+    }
+
+    function awardClue(teamIdx, delta) {
+      if (!STATE.activeClue) return;
+      const { catIdx, valIdx } = STATE.activeClue;
+      STATE.teams[teamIdx].score += delta;
+      findClue(catIdx, valIdx).used = true;
+      closeOverlay();
+      renderScoreboard();
+      renderBoard();
+      maybeTriggerFinal();
+    }
+
+    function closeOverlay() {
+      stopAndResetClueAudio();
+      const wasActive = !!STATE.activeClue;
+      if (wasActive) {
+        const { catIdx, valIdx } = STATE.activeClue;
+        findClue(catIdx, valIdx).used = true;
+      }
+      STATE.activeClue = null;
+      $("overlay").classList.remove("active");
+      renderBoard();
+      maybeTriggerFinal();
+    }
+
+    // Re-render award buttons when toggling deduct mode mid-flow
+    function refreshAwardLabels() {
+      if (!STATE.activeClue) return;
+      const visible = $("award-section").classList.contains("visible");
+      if (visible) revealAnswer();
+    }
+
+    // =================== Final Jeopardy ===================
+    function maybeTriggerFinal() {
+      if (!allCluesUsed()) return;
+      if (STATE.finalTriggered) return;
+      if (STATE.finalJeopardy.stage !== "idle") return;
+      STATE.finalTriggered = true;
+      // Small delay so the user sees the last cell grey out before the overlay
+      setTimeout(() => openFinal(), 350);
+    }
+
+    function openFinal() {
+      // Reset per-run state but keep content
+      STATE.finalJeopardy.stage = "prompt";
+      STATE.finalJeopardy.wagers = {};
+      STATE.finalJeopardy.results = {};
+      stopFinalTimer();
+      const elig = eligibleTeamIdxs();
+      const sub = $("fj-prompt-sub");
+      if (elig.length === 0) {
+        sub.textContent = "All clues are exhausted, but no team has a positive score, so no one is eligible for Final Jeopardy. You can still reveal the question for fun.";
+      } else {
+        const names = elig.map((i) => STATE.teams[i].name).join(", ");
+        sub.textContent = "All clues are exhausted. Eligible teams: " + names + ".";
+      }
+      setFjStage("prompt");
+      $("final-overlay").classList.add("active");
+    }
+
+    function setFjStage(stage) {
+      STATE.finalJeopardy.stage = stage;
+      document
+        .querySelectorAll("#final-overlay .fj-stage")
+        .forEach((el) => {
+          el.classList.toggle("active", el.dataset.stage === stage);
+        });
+    }
+
+    function closeFinal() {
+      stopFinalTimer();
+      pauseMusicIfPlaying();
+      $("final-overlay").classList.remove("active");
+      STATE.finalJeopardy.stage = "idle";
+      syncFinalOpenButton();
+    }
+
+    function syncFinalOpenButton() {
+      const btn = $("fj-open-btn");
+      const canOpen =
+        allCluesUsed() &&
+        STATE.finalJeopardy.stage === "idle" &&
+        !$("final-overlay").classList.contains("active");
+      btn.style.display = canOpen ? "" : "none";
+      btn.disabled = !canOpen;
+    }
+
+    function showFjCategory() {
+      $("fj-category").textContent = STATE.finalJeopardy.category;
+      setFjStage("category");
+    }
+
+    function showFjWagers() {
+      const grid = $("fj-wager-grid");
+      grid.innerHTML = "";
+      STATE.finalJeopardy.wagers = {};
+      STATE.teams.forEach((team, i) => {
+        const eligible = team.score > 0;
+        const wrap = document.createElement("div");
+        wrap.className = "fj-wager" + (eligible ? "" : " disqualified");
+        if (eligible) {
+          wrap.innerHTML = `
+            <div class="fj-team-name">${escapeHtml(team.name)}</div>
+            <div class="fj-team-score">Score: ${fmt(team.score)}</div>
+            <input type="number" min="0" max="${team.score}" step="1" value="0" data-wager-team="${i}" />
+          `;
+        } else {
+          wrap.innerHTML = `
+            <div class="fj-team-name">${escapeHtml(team.name)}</div>
+            <div class="fj-team-score">Score: ${fmt(team.score)}</div>
+            <div class="fj-disq-label">Disqualified</div>
+          `;
+        }
+        grid.appendChild(wrap);
+      });
+      $("fj-wager-error").textContent = "";
+      setFjStage("wagers");
+      const firstInput = grid.querySelector("input[type=number]");
+      if (firstInput) firstInput.focus();
+    }
+
+    function lockWagers() {
+      const inputs = document.querySelectorAll("#fj-wager-grid input[type=number]");
+      const wagers = {};
+      let firstInvalid = null;
+      inputs.forEach((input) => {
+        const idx = +input.dataset.wagerTeam;
+        const max = STATE.teams[idx].score;
+        const raw = input.value.trim();
+        const n = Math.floor(Number(raw));
+        const valid = raw !== "" && Number.isFinite(n) && n >= 0 && n <= max;
+        input.classList.toggle("invalid", !valid);
+        if (!valid && firstInvalid === null) firstInvalid = idx;
+        if (valid) wagers[idx] = n;
+      });
+      if (firstInvalid !== null) {
+        const max = STATE.teams[firstInvalid].score;
+        $("fj-wager-error").textContent =
+          "Each wager must be a whole number from $0 up to that team's current score (max $" + max.toLocaleString() + ").";
+        return;
+      }
+      $("fj-wager-error").textContent = "";
+      STATE.finalJeopardy.wagers = wagers;
+      showFjClue();
+    }
+
+    function showFjClue() {
+      $("fj-clue-eyebrow").textContent =
+        "Final Jeopardy \u2014 " + STATE.finalJeopardy.category;
+      $("fj-clue-text").textContent = STATE.finalJeopardy.clue;
+      setFjStage("clue");
+      startFinalTimer();
+      // Restart the theme from the beginning for the dramatic countdown
+      try {
+        bgMusic.currentTime = 0;
+        const p = bgMusic.play();
+        if (p && typeof p.catch === "function") p.catch(() => {});
+      } catch {}
+    }
+
+    function startFinalTimer() {
+      stopFinalTimer();
+      STATE.finalJeopardy.timeLeft = FINAL_DURATION_S;
+      updateTimerUI();
+      STATE.finalJeopardy.timer = setInterval(() => {
+        STATE.finalJeopardy.timeLeft -= 1;
+        updateTimerUI();
+        if (STATE.finalJeopardy.timeLeft <= 0) {
+          stopFinalTimer();
+          if (STATE.finalJeopardy.stage === "clue") {
+            showFjAnswer();
+          }
+        }
+      }, 1000);
+    }
+
+    function stopFinalTimer() {
+      if (STATE.finalJeopardy.timer) {
+        clearInterval(STATE.finalJeopardy.timer);
+        STATE.finalJeopardy.timer = null;
+      }
+    }
+
+    function updateTimerUI() {
+      const t = Math.max(0, STATE.finalJeopardy.timeLeft);
+      const pct = (t / FINAL_DURATION_S) * 100;
+      $("fj-timer-fill").style.width = pct + "%";
+      $("fj-timer-text").textContent = t + "s";
+    }
+
+    function pauseMusicIfPlaying() {
+      try {
+        if (!bgMusic.paused) bgMusic.pause();
+      } catch {}
+    }
+
+    function showFjAnswer() {
+      stopFinalTimer();
+      pauseMusicIfPlaying();
+      $("fj-answer-text").textContent = STATE.finalJeopardy.answer;
+
+      const grid = $("fj-adjudicate-grid");
+      grid.innerHTML = "";
+      const elig = eligibleTeamIdxs();
+      if (elig.length === 0) {
+        const note = document.createElement("div");
+        note.className = "fj-sub";
+        note.textContent = "No eligible teams \u2014 nothing to score.";
+        grid.appendChild(note);
+      } else {
+        elig.forEach((i) => {
+          const team = STATE.teams[i];
+          const w = STATE.finalJeopardy.wagers[i] ?? 0;
+          const row = document.createElement("div");
+          row.className = "fj-adjudicate-row";
+          row.innerHTML = `
+            <div class="fj-row-name">${escapeHtml(team.name)}<small>Wager: $${w.toLocaleString()}</small><small class="fj-live-score" data-team-index="${i}">Total now: ${fmt(team.score)}</small></div>
+            <button type="button" class="correct" data-mark="correct" data-team="${i}">Correct (+$${w.toLocaleString()})</button>
+            <button type="button" class="wrong" data-mark="wrong" data-team="${i}">Wrong (-$${w.toLocaleString()})</button>
+            <div class="fj-mini-adjust">
+              <button type="button" data-adjust-final="-100" data-team="${i}">-100</button>
+              <button type="button" data-adjust-final="100" data-team="${i}">+100</button>
+            </div>
+          `;
+          grid.appendChild(row);
+        });
+        grid.querySelectorAll("button[data-mark]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const i = +btn.dataset.team;
+            markFinal(i, btn.dataset.mark, btn);
+          });
+        });
+        grid.querySelectorAll("button[data-adjust-final]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const i = +btn.dataset.team;
+            const delta = +btn.dataset.adjustFinal;
+            STATE.teams[i].score += delta;
+            renderScoreboard();
+            refreshFjAnswerLiveTotals();
+          });
+        });
+        refreshFjAnswerLiveTotals();
+      }
+      setFjStage("answer");
+    }
+
+    function markFinal(teamIdx, mark, btn) {
+      const w = STATE.finalJeopardy.wagers[teamIdx] ?? 0;
+      const prev = STATE.finalJeopardy.results[teamIdx];
+      // Undo previous adjustment if user changes their mind
+      if (prev === "correct") STATE.teams[teamIdx].score -= w;
+      else if (prev === "wrong") STATE.teams[teamIdx].score += w;
+      // Apply new mark
+      if (mark === "correct") STATE.teams[teamIdx].score += w;
+      else STATE.teams[teamIdx].score -= w;
+      STATE.finalJeopardy.results[teamIdx] = mark;
+      // Reflect selection visually within the row
+      const row = btn.parentElement;
+      row.querySelectorAll("button[data-mark]").forEach((b) => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      renderScoreboard();
+      refreshFjAnswerLiveTotals();
+    }
+
+    function showFjResults() {
+      const ranked = STATE.teams
+        .map((t, i) => ({ ...t, idx: i }))
+        .sort((a, b) => b.score - a.score);
+      const topScore = ranked.length ? ranked[0].score : 0;
+
+      const list = $("fj-results-list");
+      list.innerHTML = "";
+      ranked.forEach((row, i) => {
+        const isWinner = row.score === topScore && topScore > 0;
+        const li = document.createElement("li");
+        li.className = "fj-results-row" + (isWinner ? " winner" : "") + (row.score < 0 ? " negative" : "");
+        const wagered = STATE.finalJeopardy.wagers[row.idx];
+        const result = STATE.finalJeopardy.results[row.idx];
+        const sub = wagered != null
+          ? "Wager: $" + wagered.toLocaleString() + (result ? " \u2014 " + (result === "correct" ? "Correct" : "Wrong") : "")
+          : "Did not play Final";
+        li.innerHTML = `
+          <div class="rank">${i + 1}</div>
+          <div class="name">${escapeHtml(row.name)}<small>${sub}</small></div>
+          <div class="score">${fmt(row.score)}</div>
+        `;
+        list.appendChild(li);
+      });
+
+      const winners = ranked.filter((r) => r.score === topScore && topScore > 0);
+      const banner = $("fj-winner-banner");
+      if (winners.length === 0) {
+        banner.textContent = "No winner \u2014 nobody finished above $0.";
+      } else if (winners.length === 1) {
+        banner.textContent = "Winner: " + winners[0].name;
+      } else {
+        banner.textContent = "Tie: " + winners.map((w) => w.name).join(" & ");
+      }
+      setFjStage("results");
+    }
+
+    // =================== Events ===================
+    $("reveal-btn").addEventListener("click", revealAnswer);
+    $("skip-btn").addEventListener("click", closeOverlay);
+    $("deduct-toggle").addEventListener("change", refreshAwardLabels);
+
+    $("overlay").addEventListener("click", (e) => {
+      if (e.target.id === "overlay") closeOverlay();
+    });
+
+    $("reset-btn").addEventListener("click", () => {
+      if (!confirm("Reset all scores and re-enable every clue?")) return;
+      STATE.teams.forEach((t) => (t.score = 0));
+      STATE.categories.forEach((c) => c.clues.forEach((q) => (q.used = false)));
+      STATE.activeClue = null;
+      stopAndResetClueAudio();
+      stopFinalTimer();
+      pauseMusicIfPlaying();
+      STATE.finalJeopardy.stage = "idle";
+      STATE.finalJeopardy.wagers = {};
+      STATE.finalJeopardy.results = {};
+      STATE.finalJeopardy.timeLeft = FINAL_DURATION_S;
+      STATE.finalTriggered = false;
+      $("overlay").classList.remove("active");
+      $("final-overlay").classList.remove("active");
+      renderScoreboard();
+      renderBoard();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      const overlayActive = $("overlay").classList.contains("active");
+      const finalActive = $("final-overlay").classList.contains("active");
+      if (overlayActive) {
+        if (e.key === "Escape") closeOverlay();
+        if (e.key === " " && $("reveal-btn").style.display !== "none") {
+          e.preventDefault();
+          revealAnswer();
+        }
+        return;
+      }
+      if (finalActive) {
+        const stage = STATE.finalJeopardy.stage;
+        if (e.key === "Escape" && (stage === "prompt" || stage === "results")) {
+          closeFinal();
+        }
+        if (e.key === " " && stage === "clue") {
+          e.preventDefault();
+          showFjAnswer();
+        }
+      }
+    });
+
+    // Final Jeopardy button wiring
+    $("fj-start-btn").addEventListener("click", showFjCategory);
+    $("fj-cancel-btn").addEventListener("click", closeFinal);
+    $("fj-to-wagers-btn").addEventListener("click", () => {
+      const elig = eligibleTeamIdxs();
+      if (elig.length === 0) {
+        // No one eligible -> skip wagers and go straight to clue (no scoring)
+        STATE.finalJeopardy.wagers = {};
+        showFjClue();
+      } else {
+        showFjWagers();
+      }
+    });
+    $("fj-lock-wagers-btn").addEventListener("click", lockWagers);
+    $("fj-reveal-btn").addEventListener("click", showFjAnswer);
+    $("fj-to-results-btn").addEventListener("click", showFjResults);
+    $("fj-close-btn").addEventListener("click", closeFinal);
+    $("fj-open-btn").addEventListener("click", () => {
+      if (!allCluesUsed()) return;
+      openFinal();
+    });
+    $("final-overlay").addEventListener("click", (e) => {
+      if (e.target.id !== "final-overlay") return;
+      const stage = STATE.finalJeopardy.stage;
+      if (stage === "prompt" || stage === "results") closeFinal();
+    });
+
+    // =================== Background music ===================
+    const bgMusic = $("bg-music");
+    const musicBtn = $("music-btn");
+    const musicVol = $("music-volume");
+
+    function syncMusicBtn() {
+      const on = !bgMusic.paused;
+      musicBtn.textContent = on ? "Music: On" : "Music: Off";
+      musicBtn.classList.toggle("active", on);
+      musicBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    }
+
+    bgMusic.volume = Number(musicVol.value) / 100;
+    musicVol.addEventListener("input", () => {
+      bgMusic.volume = Number(musicVol.value) / 100;
+    });
+
+    musicBtn.addEventListener("click", async () => {
+      if (bgMusic.paused) {
+        try {
+          await bgMusic.play();
+        } catch {
+          alert("Could not start audio. Click Music again, or check that jeopardy-theme.mp3 is in the same folder as index.html.");
+          return;
+        }
+      } else {
+        bgMusic.pause();
+      }
+      syncMusicBtn();
+    });
+
+    bgMusic.addEventListener("play", syncMusicBtn);
+    bgMusic.addEventListener("pause", syncMusicBtn);
+
+    (function setupClueAudioElement() {
+      const audio = $("clue-audio");
+      const toggleBtn = $("clue-audio-toggle");
+      const replayBtn = $("clue-audio-replay");
+
+      audio.addEventListener("play", () => {
+        duckThemeForSnippet();
+        syncClueAudioToolbar();
+      });
+      audio.addEventListener("pause", syncClueAudioToolbar);
+      audio.addEventListener("ended", () => {
+        restoreThemeAfterSnippet();
+        syncClueAudioToolbar();
+      });
+      audio.addEventListener("loadeddata", () => {
+        $("clue-audio-error").hidden = true;
+      });
+      audio.addEventListener("error", () => {
+        const err = $("clue-audio-error");
+        err.hidden = false;
+        err.textContent =
+          "Could not load: " +
+          (audio.dataset.snippetPath || "audio file") +
+          " — add that MP3 alongside index.html (matching the path above).";
+      });
+
+      toggleBtn.addEventListener("click", async () => {
+        if (!audio.src) return;
+        if (audio.paused) {
+          try {
+            await audio.play();
+          } catch {}
+        } else {
+          audio.pause();
+        }
+        syncClueAudioToolbar();
+      });
+
+      replayBtn.addEventListener("click", async () => {
+        if (!audio.src) return;
+        audio.currentTime = 0;
+        try {
+          await audio.play();
+        } catch {}
+        syncClueAudioToolbar();
+      });
+    })();
+
+    // =================== Init ===================
+    renderScoreboard();
+    renderBoard();
+  </script>
+</body>
+</html>
